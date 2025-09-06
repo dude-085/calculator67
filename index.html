@@ -1,45 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { margin:0; font-family:Arial, sans-serif; background:#111; color:#eee; }
-    .calc { max-width:340px; margin:40px auto; padding:16px; background:#1e1e1e; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.4); }
-    .display { background:#000; color:#0f0; font-size:28px; text-align:right; padding:12px; border-radius:8px; margin-bottom:12px; overflow-x:auto; }
-    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    button { height:52px; font-size:18px; border:none; border-radius:8px; cursor:pointer; }
-    .op { background:#333; color:#eee; }
-    .num { background:#555; color:#fff; }
-    .eq { background:#0f0; color:#000; grid-column:span 2; }
-    .clear { background:#c00; color:#fff; }
-    .made { text-align:center; margin-top:12px; font-size:12px; opacity:.7; }
-    /* troll screen */
-    #trollScreen {
-      display:none; position:fixed; inset:0; background:#000; color:#fff;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-    #trollScreen img { max-width:200px; }
-    #msgBtn { padding:6px 12px; background:#444; color:#fff; border-radius:6px; cursor:pointer; border:none; }
+
+    /* Calculator box */
+    .calc {
+      width: 320px;
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 28px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      text-align: right;
+      overflow-x: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    button {
+      height: 52px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .num { background: #333; color: #fff; }
+    .op { background: #555; color: #fff; }
+    .eq { background: #0f0; color: #000; grid-column: span 2; font-weight: bold; }
+    .clear { background: #c00; color: #fff; grid-column: span 2; }
+
+    .made { text-align: center; margin-top: 10px; font-size: 12px; opacity: 0.7; }
+
+    /* Troll screen */
+    #trollScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    #trollScreen h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    #trollScreen img {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    #msgBtn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      padding: 4px 8px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    #msgBtn:hover { opacity: 1; }
   </style>
 </head>
 <body>
-  <div class="calc">
+  <!-- Calculator -->
+  <div class="calc" id="calcBox">
     <div id="display" class="display">0</div>
     <div class="grid">
       <button class="clear" data-act="clear">AC</button>
       <button class="op" data-val="/">÷</button>
       <button class="op" data-val="*">×</button>
       <button class="op" data-val="-">−</button>
+
       <button class="num" data-val="7">7</button>
       <button class="num" data-val="8">8</button>
       <button class="num" data-val="9">9</button>
       <button class="op" data-val="+">+</button>
+
       <button class="num" data-val="4">4</button>
       <button class="num" data-val="5">5</button>
       <button class="num" data-val="6">6</button>
       <button class="eq" data-act="eq">=</button>
+
       <button class="num" data-val="1">1</button>
       <button class="num" data-val="2">2</button>
       <button class="num" data-val="3">3</button>
@@ -49,15 +123,16 @@
     <div class="made">(made by robert)</div>
   </div>
 
-  <!-- troll screen -->
+  <!-- Troll screen -->
   <div id="trollScreen">
     <h1>Get Trolled</h1>
-    <img src="https://i.imgur.com/1Q9Z1Zm.png" alt="Trollface" />
+    <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Trollface_non-free.png" alt="Trollface" />
     <button id="msgBtn">Show Message</button>
   </div>
 
 <script>
   const display = document.getElementById("display");
+  const calcBox = document.getElementById("calcBox");
   const trollScreen = document.getElementById("trollScreen");
   const msgBtn = document.getElementById("msgBtn");
 
@@ -69,7 +144,6 @@
 
   function safeEval(e) {
     try {
-      // allow only numbers/operators
       if (!/^[0-9+\-*/.() ]*$/.test(e)) throw "bad";
       // eslint-disable-next-line no-new-func
       return Function(`return (${e})`)();
@@ -80,10 +154,8 @@
 
   function onEquals() {
     if (expr.trim() === "676767") {
-      // trigger troll mode
-      document.body.innerHTML = ""; // clear page
-      document.body.appendChild(trollScreen);
-      trollScreen.style.display = "flex";
+      calcBox.style.display = "none";
+      trollScreen.style.display = "block";
       return;
     }
     expr = String(safeEval(expr));
@@ -108,3 +180,4 @@
 </script>
 </body>
 </html>
+
