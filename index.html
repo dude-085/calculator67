@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#111; color:#eee; }
+    .calc { max-width:340px; margin:40px auto; padding:16px; background:#1e1e1e; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.4); }
+    .display { background:#000; color:#0f0; font-size:28px; text-align:right; padding:12px; border-radius:8px; margin-bottom:12px; overflow-x:auto; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    button { height:52px; font-size:18px; border:none; border-radius:8px; cursor:pointer; }
+    .op { background:#333; color:#eee; }
+    .num { background:#555; color:#fff; }
+    .eq { background:#0f0; color:#000; grid-column:span 2; }
+    .clear { background:#c00; color:#fff; }
+    .made { text-align:center; margin-top:12px; font-size:12px; opacity:.7; }
+    /* troll screen */
+    #trollScreen {
+      display:none; position:fixed; inset:0; background:#000; color:#fff;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+    }
+    #trollScreen img { max-width:200px; }
+    #msgBtn { padding:6px 12px; background:#444; color:#fff; border-radius:6px; cursor:pointer; border:none; }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div id="display" class="display">0</div>
+    <div class="grid">
+      <button class="clear" data-act="clear">AC</button>
+      <button class="op" data-val="/">÷</button>
+      <button class="op" data-val="*">×</button>
+      <button class="op" data-val="-">−</button>
+      <button class="num" data-val="7">7</button>
+      <button class="num" data-val="8">8</button>
+      <button class="num" data-val="9">9</button>
+      <button class="op" data-val="+">+</button>
+      <button class="num" data-val="4">4</button>
+      <button class="num" data-val="5">5</button>
+      <button class="num" data-val="6">6</button>
+      <button class="eq" data-act="eq">=</button>
+      <button class="num" data-val="1">1</button>
+      <button class="num" data-val="2">2</button>
+      <button class="num" data-val="3">3</button>
+      <button class="num" data-val="0">0</button>
+      <button class="num" data-val=".">.</button>
+    </div>
+    <div class="made">(made by robert)</div>
+  </div>
+
+  <!-- troll screen -->
+  <div id="trollScreen">
+    <h1>Get Trolled</h1>
+    <img src="https://i.imgur.com/1Q9Z1Zm.png" alt="Trollface" />
+    <button id="msgBtn">Show Message</button>
+  </div>
+
+<script>
+  const display = document.getElementById("display");
+  const trollScreen = document.getElementById("trollScreen");
+  const msgBtn = document.getElementById("msgBtn");
+
+  let expr = "";
+
+  function render() {
+    display.textContent = expr.length ? expr : "0";
+  }
+
+  function safeEval(e) {
+    try {
+      // allow only numbers/operators
+      if (!/^[0-9+\-*/.() ]*$/.test(e)) throw "bad";
+      // eslint-disable-next-line no-new-func
+      return Function(`return (${e})`)();
+    } catch {
+      return "Error";
+    }
+  }
+
+  function onEquals() {
+    if (expr.trim() === "676767") {
+      // trigger troll mode
+      document.body.innerHTML = ""; // clear page
+      document.body.appendChild(trollScreen);
+      trollScreen.style.display = "flex";
+      return;
+    }
+    expr = String(safeEval(expr));
+    render();
+  }
+
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const val = btn.getAttribute("data-val");
+    const act = btn.getAttribute("data-act");
+    if(val!=null){ expr += val; render(); }
+    else if(act==="clear"){ expr=""; render(); }
+    else if(act==="eq"){ onEquals(); }
+  });
+
+  msgBtn.addEventListener("click", ()=>{
+    alert("我浪费了你的时间"); // Chinese: "I wasted your time"
+  });
+
+  render();
+</script>
+</body>
+</html>
